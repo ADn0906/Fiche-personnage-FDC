@@ -308,5 +308,40 @@ if(step===7)html+='<h2>Complète ton histoire</h2><label>Historique</label><inpu
 if(step===8)html+='<h2>Vérifie ton aventurier</h2><div class="item"><b>'+esc(d.name+' '+d.lastName)+'</b><p>'+esc(d.race+' — '+d.subrace)+'<br>'+esc(d.cls+' · niveau '+d.level+(d.subclass?' · '+d.subclass:''))+'</p><p>PV estimés : '+creatorPreviewHp(d)+' · CA : '+d.ac+'</p><p>FOR '+d.stats.FOR+' · DEX '+d.stats.DEX+' · CON '+d.stats.CON+' · INT '+d.stats.INT+' · SAG '+d.stats.SAG+' · CHA '+d.stats.CHA+'</p></div><p class="muted">Les valeurs et capacités pourront être ajustées ensuite dans la fiche. Les choix avancés propres à chaque sous-classe ne sont pas tous automatisés.</p>';
 html+='</div><div class="card"><div class="row">'+(step?button('← Précédent','fdcCreatorMove(-1)','secondary'):button('Annuler','showFdcHome()','secondary'))+(step===8?button('✓ Créer la fiche','finishFdcCreation()','primary'):button('Suivant →','fdcCreatorNext()','primary'))+'</div></div>';return html};
 
+
+const FDC_BEGINNER_STATS={
+'Barbare':['FOR','CON','DEX'],'Barde':['CHA','DEX','CON'],'Clerc':['SAG','CON','FOR'],'Druide':['SAG','CON','DEX'],'Ensorceleur':['CHA','CON','DEX'],'Guerrier':['FOR','CON','DEX'],'Magicien':['INT','CON','DEX'],'Moine':['DEX','SAG','CON'],'Occultiste':['CHA','CON','DEX'],'Paladin':['FOR','CHA','CON'],'Rôdeur':['DEX','SAG','CON'],'Roublard':['DEX','CON','CHA']
+};
+const FDC_CLASS_ROLE={'Barbare':'⚔️ Corps à corps','Barde':'🎵 Soutien','Clerc':'✨ Soins et protection','Druide':'🌿 Nature et magie','Ensorceleur':'🔥 Magie innée','Guerrier':'🛡️ Combat','Magicien':'📖 Magie et savoir','Moine':'🥋 Mobilité','Occultiste':'🔮 Pactes et magie','Paladin':'⚔️ Défense et magie','Rôdeur':'🏹 Exploration','Roublard':'🗡️ Discrétion'};
+const FDC_RACE_ICONS={'Humain':'🧑','Elfe':'🧝','Nain':'⛏️','Halfelin':'🍀','Gnome':'🔧','Demi-elfe':'🌙','Demi-orc':'💪','Drakéide':'🐉','Tieffelin':'🔥'};
+function fdcSuggestedStats(){creatorRead();let keys=FDC_BEGINNER_STATS[creationDraft.cls]||['FOR','CON','DEX'];let order=[...keys,...Object.keys(creationDraft.stats).filter(x=>!keys.includes(x))];let scores=[15,14,13,12,10,8];order.forEach((k,i)=>creationDraft.stats[k]=scores[i]);render()}
+function fdcCreatorLevelPreset(n){creatorRead();creationDraft.level=n;render()}
+function fdcCreatorToggleHelp(){let e=document.getElementById('fdcCreatorHelp');if(e)e.hidden=!e.hidden}
+function fdcCreatorQuickEquipment(){creatorRead();let cls=creationDraft.cls;let eq={
+'Barbare':'Hache à deux mains\n2 hachettes\nSac d’explorateur',
+'Barde':'Rapière\nInstrument de musique\nArmure de cuir\nDague',
+'Clerc':'Masse\nBouclier\nSymbole sacré\nSac de prêtre',
+'Druide':'Cimeterre\nBouclier en bois\nFocaliseur druidique',
+'Ensorceleur':'Arbalète légère\n20 carreaux\nFocaliseur arcanique\n2 dagues',
+'Guerrier':'Cotte de mailles\nÉpée longue\nBouclier\nSac d’explorateur',
+'Magicien':'Bâton\nGrimoire\nFocaliseur arcanique\nSac d’érudit',
+'Moine':'Épée courte\n10 fléchettes\nSac d’explorateur',
+'Occultiste':'Armure de cuir\nArbalète légère\n20 carreaux\nFocaliseur arcanique',
+'Paladin':'Cotte de mailles\nÉpée longue\nBouclier\nSymbole sacré',
+'Rôdeur':'Armure d’écailles\n2 épées courtes\nArc long\n20 flèches',
+'Roublard':'Armure de cuir\nRapière\nArc court\n20 flèches\nOutils de voleur'};
+creationDraft.equipment=eq[cls]||'';render()}
+function fdcCreatorStatGuide(){let cls=creationDraft.cls;let keys=FDC_BEGINNER_STATS[cls]||[];return 'Pour '+cls+', privilégie '+keys.join(', ')+'. Les scores saisis sont définitifs : inclus les bonus de race toi-même si tu en utilises.'}
+function fdcCreatorStepText(){let d=creationDraft;return {0:'Ton héros commence par un nom.',1:'Choisis ce qui te plaît. Tu pourras lire les avantages avant de décider.',2:'Ton rôle dans l’équipe : combattre, protéger, soigner, explorer ou lancer des sorts.',3:'Le niveau détermine les capacités et les sorts accessibles.',4:'On t’aide à répartir les six caractéristiques.',5:'Certaines classes choisissent leur spécialisation après quelques niveaux.',6:'Les sorts dépendent de la classe et du niveau.',7:'Quelques détails pour donner vie à ton personnage.',8:'Vérifie tes choix avant de créer ta fiche.'}[fdcCreatorStep]}
+const fdcCreatorOldHtml=fdcCreateHtml;
+fdcCreateHtml=function(){let d=creationDraft,step=fdcCreatorStep;let html=fdcCreatorOldHtml();
+html=html.replace('<p class="muted">Étape '+(step+1)+' sur '+FDC_CREATOR_STEPS.length+' · '+FDC_CREATOR_STEPS[step]+'</p>','<p class="muted">Étape '+(step+1)+' sur '+FDC_CREATOR_STEPS.length+' · '+FDC_CREATOR_STEPS[step]+'</p><p class="muted">'+esc(fdcCreatorStepText())+'</p>');
+if(step===1||step===2){let start=html.indexOf('<h2>Quelle '),end=step===1?html.indexOf('<label>Sous-race / ascendance</label>'):html.indexOf('</div><div class="card"><div class="row">',start);if(start>=0&&end>start){let head=step===1?'<h2>Choisis ton peuple</h2><p class="muted">Appuie sur une carte pour voir son style et ses avantages.</p>':'<h2>Choisis ton métier d’aventurier</h2><p class="muted">Aucune classe n’est mauvaise : choisis ton style de jeu.</p>';let arr=step===1?CREATOR_RACES:CREATOR_CLASSES;let cards='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:9px;margin:12px 0">'+arr.map(x=>'<button type="button" class="'+((step===1?d.race:d.cls)===x?'primary':'secondary')+'" style="text-align:left;min-height:112px;padding:13px;white-space:normal;border-radius:12px" onclick="fdcCreatorSelect(\''+(step===1?'race':'cls')+'\','+JSON.stringify(x).replace(/"/g,'&quot;')+')"><div style="font-size:23px">'+(step===1?FDC_RACE_ICONS[x]||'🧑':'🎲')+'</div><b>'+esc(x)+'</b><div style="font-size:12px;opacity:.9;margin-top:6px;line-height:1.4">'+esc(step===1?FDC_RACE_HELP[x]:FDC_CLASS_ROLE[x]+' · '+FDC_CLASS_HELP[x])+'</div></button>').join('')+'</div>';html=html.slice(0,start)+head+cards+html.slice(end)}}
+if(step===3){let mark='<input type="number" id="create_level"';let i=html.indexOf(mark);if(i>=0)html=html.slice(0,i)+'<div class="row" style="flex-wrap:wrap;margin:12px 0">'+[1,3,5,10,20].map(n=>button('Niv. '+n,'fdcCreatorLevelPreset('+n+')','small '+(d.level===n?'primary':'secondary'))).join('')+'</div>'+html.slice(i)}
+if(step===4){let needle='<div class="row">'+button('🎲 Aléatoire (4d6)','fdcCreatorRoll()','small secondary');let at=html.indexOf(needle);if(at>=0)html=html.slice(0,at)+'<p class="muted"><b>Conseil :</b> '+esc(fdcCreatorStatGuide())+'</p><div class="row" style="flex-wrap:wrap">'+button('⭐ Conseillé pour '+d.cls,'fdcSuggestedStats()','small primary')+'</div>'+html.slice(at)}
+if(step===7){let needle='<label>Équipement (un objet par ligne)</label>';html=html.replace(needle,'<div class="row" style="flex-wrap:wrap;align-items:center"><label>Équipement de départ</label>'+button('🎒 Proposition pour '+d.cls,'fdcCreatorQuickEquipment()','small secondary')+'</div>')}
+return html;
+};
+
 render();
 </script></body></html>
