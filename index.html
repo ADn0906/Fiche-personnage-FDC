@@ -641,5 +641,13 @@ fdcCreatorFeaturesHtml=function(){let html=fdcSubFeaturesOld(),d=creationDraft;l
 const fdcSubFinishPrevious=finishFdcCreation;
 finishFdcCreation=function(){let d=creationDraft;let expected=CREATOR_SUBLEVEL[d.cls]||3;if(d.level>=expected&&!FDC_SUBCLASS_2014[d.cls]?.includes(d.subclass))return alert('Choisis une spécialisation valide pour '+d.cls+'.');fdcSubFinishPrevious();if(fdcScreen==='sheet'&&party[active]){let p=party[active];p.subclassFeatures=(FDC_SUBCLASS_FEATURES_2014[d.subclass]||[]).filter(x=>x[0]<=d.level).map(x=>'Niveau '+x[0]+' : '+x[1]);data=p;save();render()}};
 
+
+const FDC_IMPORTED_SPELL_KEY='fdc_spells_xml_ids_v1';
+function fdcSpellXmlIds(){try{let a=JSON.parse(localStorage.getItem(FDC_IMPORTED_SPELL_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+function fdcSpellXmlImport(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=function(){let xml=new DOMParser().parseFromString(String(reader.result),'application/xml');if(xml.querySelector('parsererror')||xml.documentElement.tagName!=='spelllist')return alert('Fichier XML non reconnu : structure <spelllist> attendue.');let ids=[...xml.querySelectorAll('spell')].map(e=>e.textContent.trim()).filter(x=>/^[a-z0-9-]+$/.test(x));let unique=[...new Set(ids)];if(!unique.length)return alert('Aucun identifiant de sort valide.');localStorage.setItem(FDC_IMPORTED_SPELL_KEY,JSON.stringify(unique));render();toast(unique.length+' identifiants de sorts importés')};reader.onerror=()=>alert('Impossible de lire le fichier XML.');reader.readAsText(file)}
+function fdcSpellXmlPanel(){let ids=fdcSpellXmlIds();return '<div class="card"><h3>📚 Catalogue XML de sorts</h3><p class="muted">Importe le fichier spell-list.xml fourni : les identifiants sont conservés sur cet appareil. Un identifiant seul ne confirme ni le niveau, ni les classes autorisées, ni les effets du sort. Il ne sera donc pas ajouté automatiquement aux sorts sélectionnables sans vérification.</p><label for="fdcSpellXmlInput">Importer le catalogue XML</label><input id="fdcSpellXmlInput" type="file" accept=".xml,text/xml,application/xml" onchange="fdcSpellXmlImport(this)"><p><b>'+ids.length+' identifiants importés</b></p>'+(ids.length?'<details><summary>Voir les identifiants importés</summary><div style="max-height:220px;overflow:auto;font-size:12px">'+ids.map(x=>'<div>'+esc(x)+'</div>').join('')+'</div></details>':'')+'</div>'}
+const fdcSpellXmlOldChoices=fdcCreatorSpellChoices;
+fdcCreatorSpellChoices=function(){return fdcSpellXmlOldChoices()+fdcSpellXmlPanel()};
+
 render();
 </script></body></html>
