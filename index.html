@@ -649,5 +649,19 @@ function fdcSpellXmlPanel(){let ids=fdcSpellXmlIds();return '<div class="card"><
 const fdcSpellXmlOldChoices=fdcCreatorSpellChoices;
 fdcCreatorSpellChoices=function(){return fdcSpellXmlOldChoices()+fdcSpellXmlPanel()};
 
+
+const FDC_SPELL_ALIASES_2014={'armure d’agathys':'armure d agathys','armure d\'agathys':'armure d agathys','aspersion acide':'aspersion d acide','aspersion d’acide':'aspersion d acide','maléfice':'malefice','maléfice ':'malefice','malédiction':'malediction','sort mineur':'sort mineur'};
+function fdcSpellKey(n){let k=String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’']/g,' ').replace(/[^a-z0-9]+/g,' ').trim();return FDC_SPELL_ALIASES_2014[k]||k}
+function fdcUniqueSpells(names){let seen=new Set();return names.filter(n=>{let k=fdcSpellKey(n);if(!k||seen.has(k))return false;seen.add(k);return true})}
+const FDC_SPELL_CLASS_CATALOGS_2014={'Magicien':WIZARD_SPELLS,'Occultiste':FDC_WARLOCK_2014,'Ensorceleur':FDC_SORCERER_2014,...FDC_CLASS_SPELLS_2014};
+function fdcSpellClasses2014(name){let key=fdcSpellKey(name);return Object.entries(FDC_SPELL_CLASS_CATALOGS_2014).filter(([cls,cat])=>Object.values(cat).some(a=>a.some(n=>fdcSpellKey(n)===key))).map(([cls])=>cls)}
+function fdcRaceSpells2014(d){let r=d.race,sub=String(d.subrace||'').toLowerCase(),lv=d.level,arr=[];if(r==='Tieffelin'){arr.push(['Thaumaturgie',0,1]);if(lv>=3)arr.push(['Représailles infernales',1,3]);if(lv>=5)arr.push(['Ténèbres',2,5])}if(r==='Elfe'&&(/haut|high/.test(sub)))arr.push(['Tour de magie de magicien au choix',0,1]);if(r==='Elfe'&&(/noir|drow/.test(sub))){arr.push(['Lumières dansantes',0,1]);if(lv>=3)arr.push(['Lueurs féeriques',1,3]);if(lv>=5)arr.push(['Ténèbres',2,5])}return arr}
+const fdcSpellDedupConfigPrevious=fdcMagicConfig;
+fdcMagicConfig=function(d){let c=fdcSpellDedupConfigPrevious(d);if(c.valid&&c.catalog){let catalog={};for(let [lv,arr] of Object.entries(c.catalog))catalog[lv]=fdcUniqueSpells(arr);return {...c,catalog}}return c};
+const fdcSpellDedupChoicesPrevious=fdcCreatorSpellChoices;
+fdcCreatorSpellChoices=function(){let html=fdcSpellDedupChoicesPrevious();let d=creationDraft,granted=fdcRaceSpells2014(d);let all=Object.values(FDC_SPELL_CLASS_CATALOGS_2014).flatMap(cat=>Object.values(cat).flat());let total=fdcUniqueSpells(all).length;let races=granted.length?granted.map(([n,lv,at])=>'<div class="item"><b>'+esc(n)+'</b> · sort de niveau '+lv+' · obtenu au niveau '+at+' de personnage</div>').join(''):'<p class="muted">Aucun sort racial automatique identifié pour cette race et cette sous-race dans les règles de base 2014.</p>';return '<div class="card"><h3>🧬 Magie raciale (2014)</h3>'+races+'<p class="muted">Ces dons raciaux sont distincts des sorts appris par la classe et ne consomment pas les quotas de sorts connus. Les choix libres et utilisations par repos restent à configurer.</p></div>'+html+'<p class="muted">Index provisoire : '+total+' noms de sorts distincts après dédoublonnage des listes de classes existantes. Un sort partagé par plusieurs classes conserve une seule identité ; les autorisations de classe restent distinctes. Les listes de 2024 ne sont pas fusionnées avec 2014.</p>'};
+const fdcSpellDedupDetailPrevious=fdcMagicDetail;
+fdcMagicDetail=function(name){fdcSpellDedupDetailPrevious(name);let el=document.getElementById('fdcMagicDetail');if(el){let classes=fdcSpellClasses2014(name);el.innerHTML+='<p><b>Classes répertoriées (catalogue 2014 actuel) :</b> '+esc(classes.join(', ')||'Non renseignées')+'</p><p class="muted">Liste en cours de vérification avec les références fournies ; les dons de race, domaines, serments et autres accès spéciaux sont traités séparément.</p>'}};
+
 render();
 </script></body></html>
