@@ -462,5 +462,22 @@ fdcCreatorSpellChoices=function(){let d=creationDraft,c=fdcMagicConfig(d);if(!c.
 const fdcMagicOldNext=fdcCreatorMove;
 fdcCreatorMove=function(delta){if(fdcCreatorStep===6){fdcCreatorSaveSpells();let summary=fdcMagicSummary();if(delta>0&&summary&&!summary.ok)return alert('Il faut sélectionner exactement '+summary.c.can+' sorts mineurs et '+summary.c.known+' '+summary.c.label+'. Actuellement : '+summary.can+' et '+summary.other+'.')}fdcMagicOldNext(delta)};
 
+
+const FDC_SORCERER_2014={
+0:['Aspersion acide','Bouffée de poison','Contact glacial','Illusion mineure','Lumière','Main du mage','Message','Poigne électrique','Prestidigitation','Rayon de givre','Réparation','Trait de feu','Véritable coup'],
+1:['Armure du mage','Bouclier','Charme-personne','Chute de plume','Compréhension des langues','Couleurs dansantes','Déguisement','Détection de la magie','Image silencieuse','Mains brûlantes','Missile magique','Nappe de brouillard','Orbe chromatique','Rayon empoisonné','Repli expéditif','Saut','Sommeil','Vague tonnante'],
+2:['Agrandissement/Rapetissement','Cécité/Surdité','Déblocage','Détection des pensées','Flou','Immobilisation de personne','Image miroir','Invisibilité','Lévitation','Nuée de dagues','Pas brumeux','Rayon ardent','Suggestion','Ténèbres','Toile d’araignée','Vision dans le noir'],
+3:['Boule de feu','Clairvoyance','Contresort','Dissipation de la magie','Éclair','Forme gazeuse','Hâte','Image majeure','Lenteur','Motif hypnotique','Protection contre une énergie','Respiration aquatique','Vol'],
+4:['Bannissement','Confusion','Flétrissement','Invisibilité supérieure','Mur de feu','Peau de pierre','Tempête de grêle'],
+5:['Animation des objets','Cône de froid','Création','Domination de personne','Immobilisation de monstre','Mur de pierre','Nuage mortel','Télékinésie','Téléportation circulaire'],
+6:['Cercle de mort','Chaîne d’éclairs','Désintégration','Globe d’invulnérabilité','Rayon de soleil','Suggestion de masse','Vision suprême'],
+7:['Boule de feu à retardement','Doigt de mort','Inversion de la gravité','Téléportation'],
+8:['Domination de monstre','Esprit faible','Mot de pouvoir étourdissant','Nuage incendiaire'],
+9:['Arrêt du temps','Mot de pouvoir mortel','Portail','Souhait']
+};
+const FDC_SORCERER_KNOWN=[0,2,3,4,5,6,7,8,9,10,11,12,12,13,13,14,14,15,15,15,15];
+const fdcMagicConfigPrevious=fdcMagicConfig;
+fdcMagicConfig=function(d){if(d.cls==='Ensorceleur'){let lv=Math.max(1,Math.min(20,d.level));return {catalog:FDC_SORCERER_2014,max:Math.min(9,Math.ceil(lv/2)),can:lv>=10?6:lv>=4?5:4,known:FDC_SORCERER_KNOWN[lv],label:'sorts connus',valid:true}}return fdcMagicConfigPrevious(d)};
+
 render();
 </script></body></html>
