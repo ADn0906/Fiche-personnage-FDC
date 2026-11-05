@@ -479,5 +479,131 @@ const FDC_SORCERER_KNOWN=[0,2,3,4,5,6,7,8,9,10,11,12,12,13,13,14,14,15,15,15,15]
 const fdcMagicConfigPrevious=fdcMagicConfig;
 fdcMagicConfig=function(d){if(d.cls==='Ensorceleur'){let lv=Math.max(1,Math.min(20,d.level));return {catalog:FDC_SORCERER_2014,max:Math.min(9,Math.ceil(lv/2)),can:lv>=10?6:lv>=4?5:4,known:FDC_SORCERER_KNOWN[lv],label:'sorts connus',valid:true}}return fdcMagicConfigPrevious(d)};
 
+
+const FDC_SUBCLASS_2014={
+'Barbare':['Berserker','Guerrier totémique'],
+'Barde':['Collège du Savoir','Collège de la Vaillance'],
+'Clerc':['Domaine du Savoir','Domaine de la Vie','Domaine de la Lumière','Domaine de la Nature','Domaine de la Tempête','Domaine de la Tromperie','Domaine de la Guerre'],
+'Druide':['Cercle de la Terre','Cercle de la Lune'],
+'Ensorceleur':['Lignée draconique','Magie sauvage'],
+'Guerrier':['Champion','Maître de guerre','Chevalier occulte'],
+'Magicien':['École de l’Abjuration','École de l’Invocation','École de la Divination','École de l’Enchantement','École de l’Évocation','École de l’Illusion','École de la Nécromancie','École de la Transmutation'],
+'Moine':['Voie de la Main ouverte','Voie de l’Ombre','Voie des Quatre éléments'],
+'Occultiste':['Archifée','Fiélon','Grand Ancien'],
+'Paladin':['Serment de Dévotion','Serment des Anciens','Serment de Vengeance'],
+'Rôdeur':['Chasseur','Maître des bêtes'],
+'Roublard':['Voleur','Assassin','Filou arcanique']
+};
+Object.assign(CREATOR_SUBCLASSES,FDC_SUBCLASS_2014);
+const FDC_SUBCLASS_HINTS={
+'Berserker':'Frénésie et attaques supplémentaires pendant la rage.',
+'Guerrier totémique':'Totems animaux et pouvoirs de protection ou de mobilité.',
+'Collège du Savoir':'Compétences et secrets magiques supplémentaires.',
+'Collège de la Vaillance':'Combat, armures et inspiration au combat.',
+'Domaine de la Vie':'Soins et protection renforcés.',
+'Domaine de la Lumière':'Magie de lumière et de feu.',
+'Domaine du Savoir':'Compétences et connaissances.',
+'Domaine de la Nature':'Lien avec les animaux et la nature.',
+'Domaine de la Tempête':'Foudre, tonnerre et riposte.',
+'Domaine de la Tromperie':'Illusions, duplicité et discrétion.',
+'Domaine de la Guerre':'Attaques et soutien martial.',
+'Cercle de la Terre':'Magie supplémentaire et récupération naturelle.',
+'Cercle de la Lune':'Forme sauvage orientée combat.',
+'Lignée draconique':'Résistance et affinité draconiques.',
+'Magie sauvage':'Effets magiques imprévisibles.',
+'Champion':'Amélioration des coups critiques et des performances physiques.',
+'Maître de guerre':'Manœuvres de combat et dés de supériorité.',
+'Chevalier occulte':'Guerrier utilisant des sorts de magicien.',
+'École de l’Évocation':'Protection des alliés et sorts offensifs.',
+'École de l’Abjuration':'Protection magique.',
+'École de l’Invocation':'Création et invocation.',
+'École de la Divination':'Présages et prédictions.',
+'École de l’Enchantement':'Influence et contrôle mental.',
+'École de l’Illusion':'Illusions plus puissantes.',
+'École de la Nécromancie':'Énergie vitale et morts-vivants.',
+'École de la Transmutation':'Transformation de matière et créatures.',
+'Voie de la Main ouverte':'Techniques martiales et contrôle.',
+'Voie de l’Ombre':'Discrétion et pouvoirs d’ombre.',
+'Voie des Quatre éléments':'Disciplines élémentaires.',
+'Archifée':'Charme et magie féerique.',
+'Fiélon':'Pouvoirs infernaux et résistance.',
+'Grand Ancien':'Télépathie et influence mentale.',
+'Serment de Dévotion':'Protection, loyauté et lumière.',
+'Serment des Anciens':'Nature, protection et lumière.',
+'Serment de Vengeance':'Traque et châtiment des ennemis.',
+'Chasseur':'Techniques de combat contre les ennemis.',
+'Maître des bêtes':'Compagnon animal.',
+'Voleur':'Agilité et utilisation d’objets.',
+'Assassin':'Déguisement, infiltration et embuscades.',
+'Filou arcanique':'Magie de magicien axée sur illusion et enchantement.'
+};
+const FDC_CLASS_SPELLS_2014={
+'Barde':{
+0:['Lumière','Main du mage','Message','Illusion mineure','Prestidigitation','Réparation','Véritable coup'],
+1:['Charme-personne','Compréhension des langues','Détection de la magie','Déguisement','Feuille morte','Fou rire de Tasha','Grande foulée','Héroïsme','Identification','Image silencieuse','Mot de guérison','Sommeil','Vague tonnante'],
+2:['Amélioration de caractéristique','Cécité/Surdité','Détection des pensées','Immobilisation de personne','Invisibilité','Lévitation','Localisation d’objet','Silence','Suggestion'],
+3:['Dissipation de la magie','Image majeure','Langues','Motif hypnotique','Petite hutte de Léomund'],
+4:['Confusion','Invisibilité supérieure','Porte dimensionnelle','Polymorphie'],
+5:['Domination de personne','Immobilisation de monstre','Scrutation','Soins de groupe'],
+6:['Danse irrésistible d’Otto','Suggestion de masse'],
+7:['Mirage arcanique','Téléportation'],
+8:['Domination de monstre','Esprit faible'],
+9:['Mot de pouvoir guérisseur','Prémonition']
+},
+'Clerc':{
+0:['Assistance','Flamme sacrée','Lumière','Réparation','Résistance','Thaumaturgie'],
+1:['Bénédiction','Blessure','Bouclier de la foi','Création ou destruction d’eau','Détection de la magie','Détection du mal et du bien','Injonction','Mot de guérison','Protection contre le mal et le bien','Sanctuaire','Soins'],
+2:['Aide','Arme spirituelle','Augure','Calme des émotions','Immobilisation de personne','Prière de guérison','Protection contre le poison','Restauration partielle','Silence'],
+3:['Animation des morts','Clairvoyance','Dissipation de la magie','Gardiens spirituels','Langues','Mot de guérison de groupe','Retour à la vie'],
+4:['Bannissement','Contrôle de l’eau','Divination','Gardien de la foi','Liberté de mouvement'],
+5:['Colonne de flamme','Communion','Rappel à la vie','Restauration supérieure','Soins de groupe'],
+6:['Barrière de lames','Guérison','Mot de retour'],
+7:['Résurrection','Symbole'],
+8:['Aura sacrée','Tremblement de terre'],
+9:['Guérison de groupe','Résurrection suprême']
+},
+'Druide':{
+0:['Assistance','Bouffée de poison','Druidisme','Fouet épineux','Produire une flamme','Réparation','Résistance'],
+1:['Baies nourricières','Charme-personne','Création ou destruction d’eau','Détection de la magie','Enchevêtrement','Grande foulée','Mot de guérison','Nappe de brouillard','Saut','Soins','Vague tonnante'],
+2:['Amélioration de caractéristique','Chauffer le métal','Immobilisation de personne','Lame de feu','Localisation d’objet','Passage sans trace','Peau d’écorce','Rayon de lune','Restauration partielle'],
+3:['Appel de la foudre','Croissance végétale','Dissipation de la magie','Marche sur l’eau','Respiration aquatique'],
+4:['Confusion','Contrôle de l’eau','Liberté de mouvement','Mur de feu','Peau de pierre'],
+5:['Communion avec la nature','Fléau d’insectes','Mur de pierre','Passage par les arbres','Réincarnation'],
+6:['Guérison','Mur d’épines','Rayon de soleil'],
+7:['Tempête de feu','Voyage par les plantes'],
+8:['Contrôle du climat','Tremblement de terre'],
+9:['Changement de forme','Prémonition','Tempête vengeresse']
+},
+'Paladin':{
+1:['Bénédiction','Bouclier de la foi','Châtiment brûlant','Châtiment tonitruant','Détection de la magie','Détection du mal et du bien','Faveur divine','Héroïsme','Protection contre le mal et le bien','Soins'],
+2:['Aide','Arme magique','Localisation d’objet','Protection contre le poison','Restauration partielle','Trouver une monture'],
+3:['Aura de vitalité','Cercle magique','Dissipation de la magie','Lumière du jour','Rappel à la vie'],
+4:['Aura de pureté','Aura de vie','Bannissement','Localisation de créature'],
+5:['Cercle de pouvoir','Dissipation du mal et du bien','Vague destructrice']
+},
+'Rôdeur':{
+1:['Alarme','Baies nourricières','Charme-animal','Détection de la magie','Grande foulée','Marque du chasseur','Nappe de brouillard','Saut','Soins'],
+2:['Cordon de flèches','Localisation d’objet','Passage sans trace','Peau d’écorce','Protection contre le poison','Silence','Vision dans le noir'],
+3:['Conjuration d’animaux','Croissance végétale','Marche sur l’eau','Protection contre une énergie'],
+4:['Liberté de mouvement','Localisation de créature','Peau de pierre'],
+5:['Communion avec la nature','Passage par les arbres']
+}
+};
+const FDC_CLASS_KNOWN={
+'Barde':[0,4,5,6,7,8,9,10,11,12,14,15,15,16,18,19,19,20,22,22,22],
+'Rôdeur':[0,0,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11]
+};
+const FDC_CLASS_CANTRIPS={
+'Barde':[0,2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
+'Clerc':[0,3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5],
+'Druide':[0,2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4]
+};
+const fdcMagicConfigAllPrevious=fdcMagicConfig;
+fdcMagicConfig=function(d){let lv=Math.max(1,Math.min(20,d.level)),cls=d.cls,cat=FDC_CLASS_SPELLS_2014[cls];if(cat){let half=cls==='Paladin'||cls==='Rôdeur';let max=half?Math.min(5,Math.ceil(Math.max(0,lv-1)/4)):Math.min(9,Math.ceil(lv/2));let known=FDC_CLASS_KNOWN[cls]?.[lv];let can=FDC_CLASS_CANTRIPS[cls]?.[lv]||0;let prepared=cls==='Clerc'||cls==='Druide'||cls==='Paladin';if(prepared){let key=cls==='Paladin'?'CHA':'SAG';known=Math.max(1,(cls==='Paladin'?Math.floor(lv/2):lv)+Math.floor((d.stats[key]-10)/2))}return {catalog:cat,max,can,known,label:prepared?'sorts préparés':'sorts connus',valid:true,prepared}}return fdcMagicConfigAllPrevious(d)};
+const fdcAllCasterPrevious=fdcCreatorIsCaster;
+fdcCreatorIsCaster=function(d){return fdcAllCasterPrevious(d)||d.cls==='Barde'||d.cls==='Clerc'||d.cls==='Druide'||(d.cls==='Paladin'&&d.level>=2)||(d.cls==='Rôdeur'&&d.level>=2)};
+const fdcAllSubclassHtml=fdcCreateHtml;
+fdcCreateHtml=function(){let html=fdcAllSubclassHtml(),d=creationDraft;if(fdcCreatorStep===5&&d.level>=(CREATOR_SUBLEVEL[d.cls]||3)){let at=html.indexOf('<select id="create_subclass">');let end=html.indexOf('</select>',at);if(at>=0&&end>=0){let options=FDC_SUBCLASS_2014[d.cls]||[];html=html.slice(0,at)+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:9px">'+options.map(n=>'<button type="button" class="'+(d.subclass===n?'primary':'secondary')+'" style="text-align:left;white-space:normal;padding:12px" onclick="fdcCreatorSelect(\'subclass\','+JSON.stringify(n).replace(/"/g,'&quot;')+')"><b>'+esc(n)+'</b><p style="font-size:12px;opacity:.85">'+esc(FDC_SUBCLASS_HINTS[n]||'Spécialisation de '+d.cls)+'</p></button>').join('')+'</div>'+html.slice(end+9)}}return html};
+
 render();
 </script></body></html>
