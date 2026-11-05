@@ -343,5 +343,39 @@ if(step===7){let needle='<label>Équipement (un objet par ligne)</label>';html=h
 return html;
 };
 
+
+const FDC_WEAPON_CHOICES=[
+['Dague','1d4 perforants','simple'],['Bâton','1d6 contondants','simple'],['Masse','1d6 contondants','simple'],['Gourdin','1d4 contondants','simple'],['Lance','1d6 perforants','simple'],['Javeline','1d6 perforants','simple'],['Hachette','1d6 tranchants','simple'],['Arbalète légère','1d8 perforants','simple'],['Arc court','1d6 perforants','simple'],['Épée longue','1d8 tranchants','martiale'],['Épée courte','1d6 perforants','martiale'],['Rapière','1d8 perforants','martiale'],['Cimeterre','1d6 tranchants','martiale'],['Hache à deux mains','1d12 tranchants','martiale'],['Épée à deux mains','2d6 tranchants','martiale'],['Marteau de guerre','1d8 contondants','martiale'],['Arc long','1d8 perforants','martiale'],['Arbalète lourde','1d10 perforants','martiale']
+];
+const FDC_ARMOR_CHOICES=[
+['Sans armure','aucune',0],['Armure matelassée','légère',11],['Armure de cuir','légère',11],['Armure de cuir clouté','légère',12],['Armure de peaux','intermédiaire',12],['Chemise de mailles','intermédiaire',13],['Armure d’écailles','intermédiaire',14],['Cuirasse','intermédiaire',14],['Demi-plate','intermédiaire',15],['Broigne','lourde',14],['Cotte de mailles','lourde',16],['Clibanion','lourde',17],['Harnois','lourde',18]
+];
+const FDC_GEAR_PROF={
+'Barbare':{arm:['légère','intermédiaire'],shield:true,martial:true},
+'Barde':{arm:['légère'],shield:false,martial:false,extra:['Épée courte','Rapière','Épée longue']},
+'Clerc':{arm:['légère','intermédiaire'],shield:true,martial:false},
+'Druide':{arm:['légère','intermédiaire'],shield:true,martial:false},
+'Ensorceleur':{arm:[],shield:false,martial:false,extra:['Arbalète légère']},
+'Guerrier':{arm:['légère','intermédiaire','lourde'],shield:true,martial:true},
+'Magicien':{arm:[],shield:false,martial:false,extra:['Arbalète légère']},
+'Moine':{arm:[],shield:false,martial:false,extra:['Épée courte']},
+'Occultiste':{arm:['légère'],shield:false,martial:false},
+'Paladin':{arm:['légère','intermédiaire','lourde'],shield:true,martial:true},
+'Rôdeur':{arm:['légère','intermédiaire'],shield:true,martial:true},
+'Roublard':{arm:['légère'],shield:false,martial:false,extra:['Épée courte','Rapière','Épée longue','Arbalète légère']}
+};
+function fdcCreatorGearInit(){let d=creationDraft;if(!Array.isArray(d.chosenWeapons))d.chosenWeapons=[];if(!d.chosenArmor)d.chosenArmor='Sans armure';if(typeof d.chosenShield!=='boolean')d.chosenShield=false}
+function fdcCreatorGearAllowedWeapon(w){let p=FDC_GEAR_PROF[creationDraft.cls]||{};return w[2]==='simple'||p.martial||(p.extra||[]).includes(w[0])}
+function fdcCreatorGearAllowedArmor(a){let p=FDC_GEAR_PROF[creationDraft.cls]||{};return a[1]==='aucune'||(p.arm||[]).includes(a[1])}
+function fdcCreatorGearToggleWeapon(name){creatorRead();fdcCreatorGearInit();let arr=creationDraft.chosenWeapons;creationDraft.chosenWeapons=arr.includes(name)?arr.filter(x=>x!==name):[...arr,name];render()}
+function fdcCreatorGearArmor(name){creatorRead();fdcCreatorGearInit();creationDraft.chosenArmor=name;render()}
+function fdcCreatorGearShield(){creatorRead();fdcCreatorGearInit();creationDraft.chosenShield=!creationDraft.chosenShield;render()}
+function fdcCreatorGearAC(){let d=creationDraft;fdcCreatorGearInit();let armor=FDC_ARMOR_CHOICES.find(x=>x[0]===d.chosenArmor)||FDC_ARMOR_CHOICES[0];let dex=Math.floor((d.stats.DEX-10)/2),ac=armor[2]===0?10+dex:armor[2]+(armor[1]==='lourde'?0:armor[1]==='intermédiaire'?Math.min(2,dex):dex);if(armor[2]===0&&d.cls==='Barbare')ac=10+dex+Math.floor((d.stats.CON-10)/2);if(armor[2]===0&&d.cls==='Moine')ac=10+dex+Math.floor((d.stats.SAG-10)/2);return ac+(d.chosenShield?2:0)}
+function fdcCreatorGearHtml(){let d=creationDraft;fdcCreatorGearInit();let p=FDC_GEAR_PROF[d.cls]||{};let h='<div class="card"><h2>⚔️ Choisis tes armes</h2><p class="muted">Tu peux en sélectionner plusieurs. Les armes grisées ne font pas partie des maîtrises habituelles de ta classe, mais restent sélectionnables pour un personnage personnalisé.</p>';for(let w of FDC_WEAPON_CHOICES){let chosen=d.chosenWeapons.includes(w[0]),allowed=fdcCreatorGearAllowedWeapon(w);h+='<button type="button" class="'+(chosen?'primary':'secondary')+'" style="display:block;width:100%;padding:11px;margin:6px 0;text-align:left;white-space:normal;opacity:'+(allowed?1:.7)+'" onclick="fdcCreatorGearToggleWeapon('+JSON.stringify(w[0]).replace(/"/g,'&quot;')+')"><b>'+(chosen?'✓ ':'')+esc(w[0])+'</b><span style="font-size:12px;margin-left:8px">'+esc(w[1])+'</span><div style="font-size:11px;opacity:.85">'+(allowed?'Maîtrise de classe':'⚠ Pas de maîtrise de classe')+' · '+(w[2]==='simple'?'Arme courante':'Arme de guerre')+'</div></button>'}h+='</div><div class="card"><h2>🛡️ Choisis ton armure</h2><p class="muted">La classe d’armure est calculée à partir de ton équipement et de ta Dextérité. Attention : certaines classes perdent des avantages lorsqu’elles portent une armure.</p>';for(let a of FDC_ARMOR_CHOICES){let allowed=fdcCreatorGearAllowedArmor(a),chosen=d.chosenArmor===a[0];h+='<button type="button" class="'+(chosen?'primary':'secondary')+'" style="display:block;width:100%;padding:10px;margin:5px 0;text-align:left;white-space:normal;opacity:'+(allowed?1:.7)+'" onclick="fdcCreatorGearArmor('+JSON.stringify(a[0]).replace(/"/g,'&quot;')+')"><b>'+(chosen?'✓ ':'')+esc(a[0])+'</b> <span style="font-size:12px">'+(a[2]?'CA de base '+a[2]:'CA 10 + DEX')+'</span><div style="font-size:11px;opacity:.85">'+(allowed?'Maîtrise de classe':'⚠ Non maîtrisée')+'</div></button>'}h+='<button type="button" class="'+(d.chosenShield?'primary':'secondary')+'" style="width:100%;margin:9px 0" onclick="fdcCreatorGearShield()">'+(d.chosenShield?'✓ ':'')+'Bouclier (+2 CA)'+(p.shield?'':' ⚠ Non maîtrisé')+'</button><p><b>🛡️ CA estimée : '+fdcCreatorGearAC()+'</b></p><p class="muted">La CA peut varier selon les dons, la magie et les capacités particulières. Un bouclier n’est pas compatible avec certaines capacités du moine et du barbare.</p></div>';return h}
+const fdcCreatorGearBase=fdcCreateHtml;
+fdcCreateHtml=function(){let html=fdcCreatorGearBase();if(fdcCreatorStep!==7)return html;let i=html.indexOf('<label>Équipement (un objet par ligne)</label>');if(i<0)return html;let end=html.indexOf('<label>Notes et histoire</label>',i);if(end<0)return html;html=html.slice(0,i)+'<label>Autres objets et matériel (un par ligne)</label><textarea id="create_equipment" rows="3">'+esc(creationDraft.equipment)+'</textarea>'+html.slice(end);let marker='<div class="card"><div class="row">'+button('← Précédent','fdcCreatorMove(-1)','secondary');html=html.replace(marker,fdcCreatorGearHtml()+marker);return html};
+const fdcCreatorGearFinish=finishFdcCreation;
+finishFdcCreation=function(){fdcCreatorGearInit();let d=creationDraft;let gear=[...d.chosenWeapons,...(d.chosenArmor==='Sans armure'?[]:[d.chosenArmor]),...(d.chosenShield?['Bouclier']:[])];let others=d.equipment.split('\n').map(x=>x.trim()).filter(Boolean);d.equipment=[...new Set([...gear,...others])].join('\n');d.ac=fdcCreatorGearAC();fdcCreatorGearFinish();if(fdcScreen==='sheet'&&party[active]){let p=party[active];p.weapons=d.chosenWeapons.map((name,i)=>({id:Date.now()+i,name,qty:1,equipped:i===0,notes:(FDC_WEAPON_CHOICES.find(w=>w[0]===name)||[])[1]||''}));p.ac=d.ac;data=p;save();render()}};
+
 render();
 </script></body></html>
