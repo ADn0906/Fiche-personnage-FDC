@@ -416,5 +416,9 @@ fdcCreateHtml=function(){let html=fdcBackgroundOldHtml(),d=creationDraft;if(fdcC
 const fdcBackgroundOldFinish=finishFdcCreation;
 finishFdcCreation=function(){if(!FDC_BACKGROUNDS_2014[creationDraft.background])return alert('Choisis un historique avant de créer la fiche.');let d=creationDraft;let prof=fdcCreatorMergedSkills(),bg=FDC_BACKGROUNDS_2014[d.background];fdcBackgroundOldFinish();if(fdcScreen==='sheet'&&party[active]){let p=party[active];p.proficiencies=prof;p.background=d.background;p.backgroundFeature=bg.feature;p.backgroundExtra=bg.extra;p.racialFeatures=(FDC_RACE_TRAITS[d.race]||[]).filter(x=>d.level>=x[1]).map(x=>x[0]);p.classFeatures=[...(FDC_CLASS_L1[d.cls]||[])];let r=LEVEL_CLASS_DATA.find(x=>x.re.test(d.cls));if(r)for(let lv=2;lv<=d.level;lv++){if(r.g[lv])p.classFeatures.push('Niv. '+lv+' : '+r.g[lv]);if(r.asi.includes(lv))p.classFeatures.push('Niv. '+lv+' : amélioration des caractéristiques')}data=p;save();render()}};
 
+
+const fdcFeaturesSheetBase=fiche;
+fiche=function(){let html=fdcFeaturesSheetBase(),p=data;if(!p.background&&!p.classFeatures&&!p.racialFeatures)return html;let rows='<div class="card"><h2>📜 Historique et capacités</h2>'+(p.background?'<div class="item"><b>'+esc(p.background)+'</b><div class="muted">'+esc(p.backgroundFeature||'')+' · '+esc(p.backgroundExtra||'')+'</div></div>':'')+(Array.isArray(p.racialFeatures)&&p.racialFeatures.length?'<details><summary>🧬 Capacités raciales ('+p.racialFeatures.length+')</summary>'+p.racialFeatures.map(x=>'<div class="item">'+esc(x)+'</div>').join('')+'</details>':'')+(Array.isArray(p.classFeatures)&&p.classFeatures.length?'<details><summary>⚔️ Capacités de classe ('+p.classFeatures.length+')</summary>'+p.classFeatures.map(x=>'<div class="item">'+esc(x)+'</div>').join('')+'</details>':'')+'</div>';return html+rows};
+
 render();
 </script></body></html>
