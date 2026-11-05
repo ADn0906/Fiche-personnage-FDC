@@ -607,5 +607,39 @@ fdcMagicSummary=function(){let summary=fdcAllMagicSummaryPrevious();if(summary&&
 const fdcAllSubclassHtml=fdcCreateHtml;
 fdcCreateHtml=function(){let html=fdcAllSubclassHtml(),d=creationDraft;if(fdcCreatorStep===5&&d.level>=(CREATOR_SUBLEVEL[d.cls]||3)){let at=html.indexOf('<select id="create_subclass">');let end=html.indexOf('</select>',at);if(at>=0&&end>=0){let options=FDC_SUBCLASS_2014[d.cls]||[];html=html.slice(0,at)+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:9px">'+options.map(n=>'<button type="button" class="'+(d.subclass===n?'primary':'secondary')+'" style="text-align:left;white-space:normal;padding:12px" onclick="fdcCreatorSelect(\'subclass\','+JSON.stringify(n).replace(/"/g,'&quot;')+')"><b>'+esc(n)+'</b><p style="font-size:12px;opacity:.85">'+esc(FDC_SUBCLASS_HINTS[n]||'Spécialisation de '+d.cls)+'</p></button>').join('')+'</div>'+html.slice(end+9)}}return html};
 
+
+const FDC_SUBCLASS_FEATURES_2014={
+'Berserker':[[3,'Frénésie'],[6,'Rage sans esprit'],[10,'Présence intimidante'],[14,'Représailles']],
+'Guerrier totémique':[[3,'Esprit totem'],[6,'Aspect de la bête'],[10,'Marcheur spirituel'],[14,'Harmonisation totémique']],
+'Collège du Savoir':[[3,'Compétences supplémentaires'],[3,'Mots cinglants'],[6,'Secrets magiques supplémentaires'],[14,'Compétence incomparable']],
+'Collège de la Vaillance':[[3,'Maîtrises martiales'],[3,'Inspiration au combat'],[6,'Attaque supplémentaire'],[14,'Magie de bataille']],
+'Cercle de la Terre':[[2,'Tour de magie supplémentaire'],[2,'Récupération naturelle'],[3,'Sorts de cercle (terrain à choisir)'],[6,'Traversée des terrains'],[10,'Protection de la nature'],[14,'Sanctuaire de la nature']],
+'Cercle de la Lune':[[2,'Forme sauvage de combat'],[2,'Formes du cercle'],[6,'Frappe primitive'],[10,'Forme sauvage élémentaire'],[14,'Mille visages']],
+'Lignée draconique':[[1,'Ancêtre draconique'],[1,'Résilience draconique'],[6,'Affinité élémentaire'],[14,'Ailes de dragon'],[18,'Présence draconique']],
+'Magie sauvage':[[1,'Sursaut de magie sauvage'],[1,'Marées du chaos'],[6,'Infléchir le destin'],[14,'Chaos contrôlé'],[18,'Bombardement de sorts']],
+'Champion':[[3,'Critique amélioré'],[7,'Athlète remarquable'],[10,'Style de combat supplémentaire'],[15,'Critique supérieur'],[18,'Survivant']],
+'Maître de guerre':[[3,'Supériorité au combat'],[3,'Étudiant de la guerre'],[7,'Connaître son ennemi'],[10,'Supériorité améliorée (d10)'],[15,'Implacable'],[18,'Supériorité améliorée (d12)']],
+'Chevalier occulte':[[3,'Incantation de chevalier occulte'],[3,'Lien avec une arme'],[7,'Magie de guerre'],[10,'Frappe surnaturelle'],[15,'Charge arcanique'],[18,'Magie de guerre améliorée']],
+'École de l’Évocation':[[2,'Évocation érudite'],[2,'Façonneur de sorts'],[6,'Tour de magie puissant'],[10,'Évocation renforcée'],[14,'Surcharge magique']],
+'Voie de la Main ouverte':[[3,'Technique de la main ouverte'],[6,'Intégrité physique'],[11,'Tranquillité'],[17,'Paume vibratoire']],
+'Voie de l’Ombre':[[3,'Arts de l’ombre'],[6,'Pas de l’ombre'],[11,'Cape d’ombre'],[17,'Opportuniste']],
+'Voie des Quatre éléments':[[3,'Disciple des éléments'],[6,'Discipline élémentaire supplémentaire'],[11,'Discipline élémentaire supplémentaire'],[17,'Discipline élémentaire supplémentaire']],
+'Archifée':[[1,'Présence féerique'],[6,'Évasion brumeuse'],[10,'Défenses séduisantes'],[14,'Délire sombre']],
+'Fiélon':[[1,'Bénédiction du Ténébreux'],[6,'Chance du Ténébreux'],[10,'Résilience fiélonne'],[14,'Traversée des enfers']],
+'Grand Ancien':[[1,'Esprit éveillé'],[6,'Protection entropique'],[10,'Bouclier mental'],[14,'Créer un esclave']],
+'Serment de Dévotion':[[3,'Canalisation divine du serment'],[7,'Aura de dévotion'],[15,'Pureté de l’esprit'],[20,'Halo sacré']],
+'Serment des Anciens':[[3,'Canalisation divine du serment'],[7,'Aura de protection contre les sorts'],[15,'Sentinelle immortelle'],[20,'Champion ancestral']],
+'Serment de Vengeance':[[3,'Canalisation divine du serment'],[7,'Vengeur implacable'],[15,'Âme de vengeance'],[20,'Ange vengeur']],
+'Chasseur':[[3,'Proie du chasseur'],[7,'Tactiques défensives'],[11,'Attaque multiple'],[15,'Défense supérieure du chasseur']],
+'Maître des bêtes':[[3,'Compagnon du rôdeur'],[7,'Entraînement exceptionnel'],[11,'Fureur bestiale'],[15,'Partage des sorts']],
+'Voleur':[[3,'Mains lestes'],[3,'Escalade rapide'],[9,'Discrétion suprême'],[13,'Utilisation d’objets magiques'],[17,'Réflexes du voleur']],
+'Assassin':[[3,'Maîtrises supplémentaires'],[3,'Assassinat'],[9,'Expert en infiltration'],[13,'Imposteur'],[17,'Frappe mortelle']],
+'Filou arcanique':[[3,'Incantation de filou arcanique'],[3,'Main du mage prestidigitatrice'],[9,'Embuscade magique'],[13,'Filou polyvalent'],[17,'Voleur de sorts']]
+};
+const fdcSubFeaturesOld=fdcCreatorFeaturesHtml;
+fdcCreatorFeaturesHtml=function(){let html=fdcSubFeaturesOld(),d=creationDraft;let list=(FDC_SUBCLASS_FEATURES_2014[d.subclass]||[]).filter(x=>x[0]<=d.level);let section='<div class="card"><h2>🌟 Spécialisation : '+esc(d.subclass||'Non choisie')+'</h2>'+(list.length?list.map(x=>'<div class="item"><b>Niveau '+x[0]+'</b> · '+esc(x[1])+'</div>').join(''):'<p class="muted">Aucune capacité de spécialisation enregistrée à ce niveau, ou spécialisation non sélectionnée.</p>')+'<p class="muted">Les choix internes aux capacités (totems, manœuvres, domaines, pactes, métamagies, etc.) doivent encore être paramétrés.</p></div>';return html+section};
+const fdcSubFinishPrevious=finishFdcCreation;
+finishFdcCreation=function(){let d=creationDraft;let expected=CREATOR_SUBLEVEL[d.cls]||3;if(d.level>=expected&&!FDC_SUBCLASS_2014[d.cls]?.includes(d.subclass))return alert('Choisis une spécialisation valide pour '+d.cls+'.');fdcSubFinishPrevious();if(fdcScreen==='sheet'&&party[active]){let p=party[active];p.subclassFeatures=(FDC_SUBCLASS_FEATURES_2014[d.subclass]||[]).filter(x=>x[0]<=d.level).map(x=>'Niveau '+x[0]+' : '+x[1]);data=p;save();render()}};
+
 render();
 </script></body></html>
